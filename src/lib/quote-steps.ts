@@ -1,0 +1,108 @@
+import type { Answers } from './quote-store'
+
+const YES_NO_LABELS: Record<string, string> = {
+  yes: 'Yes',
+  no: 'No',
+  unsure: 'Not sure',
+}
+
+const REVENUE_LABELS: Record<number, string> = {
+  500_000: '$500K',
+  1_000_000: '$1M',
+  2_500_000: '$2.5M',
+  5_000_000: '$5M',
+  10_000_000: '$10M',
+  25_000_000: '$25M',
+  50_000_000: '$50M+',
+}
+
+const EMPLOYEE_LABELS: Record<number, string> = {
+  10: '1–10',
+  25: '11–25',
+  50: '26–50',
+  100: '51–100',
+  250: '101–250',
+  500: '250+',
+}
+
+export function isStepAnswered(id: string, answers: Answers): boolean {
+  switch (id) {
+    case 'industry':
+      return !!answers.industry
+    case 'revenue':
+      return answers.revenue != null
+    case 'employees':
+      return answers.employees != null
+    case 'country':
+      return !!answers.country
+    case 'operates':
+      return !!answers.operates
+    case 'data':
+      return (answers.data?.length ?? 0) > 0
+    case 'payments':
+    case 'remote':
+    case 'training':
+    case 'phishing':
+    case 'inventory':
+    case 'mfa':
+    case 'vpn':
+    case 'installFree':
+    case 'backups':
+    case 'backupTest':
+    case 'patching':
+    case 'legacy':
+    case 'emailBlock':
+    case 'emailAuth':
+    case 'antivirus':
+    case 'monitoring':
+    case 'ir':
+    case 'irReview':
+      return !!answers[id as keyof Answers]
+    default:
+      return false
+  }
+}
+
+export function getAnswerSummary(id: string, answers: Answers): string | null {
+  switch (id) {
+    case 'industry':
+      return answers.industry ?? null
+    case 'revenue':
+      return answers.revenue != null
+        ? REVENUE_LABELS[answers.revenue] ?? `$${answers.revenue.toLocaleString()}`
+        : null
+    case 'employees':
+      return answers.employees != null
+        ? EMPLOYEE_LABELS[answers.employees] ?? `${answers.employees} people`
+        : null
+    case 'country':
+      return answers.country ?? null
+    case 'operates':
+      return answers.operates ?? null
+    case 'data':
+      return answers.data?.length ? answers.data.join(', ') : null
+    case 'payments':
+    case 'remote':
+    case 'training':
+    case 'phishing':
+    case 'inventory':
+    case 'mfa':
+    case 'vpn':
+    case 'installFree':
+    case 'backups':
+    case 'backupTest':
+    case 'patching':
+    case 'legacy':
+    case 'emailBlock':
+    case 'emailAuth':
+    case 'antivirus':
+    case 'monitoring':
+    case 'ir':
+    case 'irReview': {
+      const val = answers[id as keyof Answers] as string | undefined
+      return val ? YES_NO_LABELS[val] ?? val : null
+    }
+    default:
+      return null
+  }
+}
