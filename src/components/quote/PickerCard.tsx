@@ -81,7 +81,7 @@ export function PickerCard({
           isTile && 'text-center text-[15px] font-semibold',
           isChip && 'text-[15px] font-semibold tabular-nums',
           !isTile && !isChip && 'min-w-0 flex-1 text-[15px] leading-snug',
-          selected ? 'text-[#1976FF]' : 'text-[#1d1d1f] group-hover:text-[#1565d8]',
+          selected ? 'text-electric' : 'text-navy-deep group-hover:text-navy',
         )}
       >
         {label}

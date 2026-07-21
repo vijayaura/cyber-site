@@ -35,7 +35,7 @@ export function QuotePlansPanel({ score, basePremium, onBack }: QuotePlansPanelP
   )
 
   return (
-    <div className="quote-shell flex h-[100dvh] flex-col overflow-hidden bg-[#09090b]">
+    <div className="quote-shell flex h-[100dvh] flex-col overflow-hidden">
       <nav className="flex h-12 shrink-0 items-center justify-between px-4 sm:px-6 lg:px-8">
         <div className="flex items-center gap-2">
           {onBack ? (
@@ -90,7 +90,7 @@ export function QuotePlansPanel({ score, basePremium, onBack }: QuotePlansPanelP
           </div>
 
           {/* Limit slider */}
-          <div className="rounded-[20px] border border-white/[0.08] bg-[#111113] px-5 py-5 sm:px-7 sm:py-6">
+          <div className="quote-sidebar rounded-[20px] border border-gold/15 px-5 py-5 sm:px-7 sm:py-6">
             <div className="mb-5 flex items-end justify-between gap-4">
               <div>
                 <p className="text-[10px] font-medium uppercase tracking-[0.14em] text-white/40">Policy limit</p>
@@ -126,7 +126,7 @@ export function QuotePlansPanel({ score, basePremium, onBack }: QuotePlansPanelP
                 className={`relative flex flex-col rounded-[20px] border p-5 sm:p-6 ${
                   plan.id === 'value'
                     ? 'border-[#1976FF]/50 bg-white shadow-[0_0_0_1px_#1976FF,0_12px_40px_rgba(25,118,255,0.12)]'
-                    : 'border-[#e8e8ed] bg-white'
+                    : 'border-navy-deep/10 bg-white'
                 }`}
               >
                 {plan.tag && (
@@ -135,23 +135,23 @@ export function QuotePlansPanel({ score, basePremium, onBack }: QuotePlansPanelP
                     {plan.tag}
                   </span>
                 )}
-                <h2 className="font-display text-xl font-normal text-[#1d1d1f]">{plan.name}</h2>
-                <p className="mt-3 font-display text-3xl font-light tabular-nums text-[#1d1d1f]">
+                <h2 className="font-display text-xl font-normal text-navy-deep">{plan.name}</h2>
+                <p className="mt-3 font-display text-3xl font-light tabular-nums text-navy-deep">
                   ${fmtNumber(plan.monthly)}
-                  <span className="text-sm text-[#86868b]">/mo</span>
+                  <span className="text-sm text-ink-muted">/mo</span>
                 </p>
-                <p className="mt-1 text-xs text-[#86868b]">
+                <p className="mt-1 text-xs text-ink-muted">
                   ${fmtNumber(plan.annual)}/yr · ${fmtNumber(plan.deductible)} deductible
                 </p>
                 <ul className="mt-5 flex-1 space-y-2 border-t border-[#f2f2f7] pt-4">
                   {FEATURE_LIST.slice(0, 6).map((f) => (
-                    <li key={f} className="flex items-center gap-2 text-[13px] text-[#1d1d1f]">
+                    <li key={f} className="flex items-center gap-2 text-[13px] text-navy-deep">
                       {plan.features[f] ? (
                         <Check className="size-3.5 shrink-0 text-[#1976FF]" />
                       ) : (
                         <Minus className="size-3.5 shrink-0 text-[#d1d1d6]" />
                       )}
-                      <span className={plan.features[f] ? '' : 'text-[#86868b]'}>{f}</span>
+                      <span className={plan.features[f] ? '' : 'text-ink-muted'}>{f}</span>
                     </li>
                   ))}
                 </ul>
@@ -159,8 +159,8 @@ export function QuotePlansPanel({ score, basePremium, onBack }: QuotePlansPanelP
                   type="button"
                   className={`mt-5 flex w-full items-center justify-center gap-2 rounded-xl py-3 text-[14px] font-semibold transition-all ${
                     plan.id === 'value'
-                      ? 'bg-[#1d1d1f] text-white hover:bg-[#333]'
-                      : 'border border-[#e8e8ed] bg-white text-[#1d1d1f] hover:border-[#1976FF]/30 hover:bg-[#f8faff]'
+                      ? 'bg-navy-deep text-white hover:bg-navy'
+                      : 'border border-navy-deep/10 bg-white text-navy-deep hover:border-electric/30 hover:bg-electric/5'
                   }`}
                 >
                   Choose {plan.name}
@@ -176,10 +176,10 @@ export function QuotePlansPanel({ score, basePremium, onBack }: QuotePlansPanelP
               <span className="inline-flex items-center gap-1.5 rounded-full bg-[#22c55e]/10 px-3 py-1 text-[10px] font-semibold uppercase tracking-wider text-[#16a34a]">
                 Great news
               </span>
-              <h2 className="mt-4 text-[22px] font-semibold tracking-tight text-[#1d1d1f] sm:text-[26px]">
+              <h2 className="mt-4 text-[22px] font-semibold tracking-tight text-navy-deep sm:text-[26px]">
                 You can reduce your premium.
               </h2>
-              <p className="mt-2 text-[15px] text-[#86868b]">
+              <p className="mt-2 text-[15px] text-ink-muted">
                 Complete a few security upgrades and unlock instant discounts on your policy.
               </p>
             </div>

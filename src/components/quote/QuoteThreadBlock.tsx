@@ -33,7 +33,7 @@ export function QuoteThreadBlock({
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
       className={cn(
-        'border-b border-[#e8e8ed] py-8 first:pt-2',
+        'border-b border-navy-deep/10 py-8 first:pt-2',
         past && !active && 'opacity-45 hover:opacity-70',
         active && 'opacity-100',
       )}
@@ -42,41 +42,41 @@ export function QuoteThreadBlock({
         <div
           className={cn(
             'mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-lg',
-            active ? 'bg-[#1976FF]/10 text-[#1976FF]' : 'bg-[#f0f0f2] text-[#86868b]',
+            active ? 'bg-navy-deep/10 text-navy-deep' : 'bg-navy-deep/5 text-ink-muted',
           )}
         >
           <Icon className="size-4" strokeWidth={1.75} aria-hidden />
         </div>
 
         <div className="min-w-0 flex-1">
-          <p className="text-[11px] font-medium uppercase tracking-[0.12em] text-[#86868b]">
+          <p className="text-[11px] font-medium uppercase tracking-[0.12em] text-ink-muted">
             Question {stepNumber}
           </p>
           <h2
             className={cn(
               'mt-1 text-[17px] font-semibold leading-snug tracking-tight sm:text-[19px]',
-              active ? 'text-[#1d1d1f]' : 'text-[#6e6e73]',
+              active ? 'text-navy-deep' : 'text-ink-muted',
             )}
           >
             {title}
           </h2>
           {active && subtitle && (
-            <p className="mt-2 text-[14px] leading-relaxed text-[#86868b]">{subtitle}</p>
+            <p className="mt-2 text-[14px] leading-relaxed text-ink-muted">{subtitle}</p>
           )}
 
           {past && !active && summary && (
             <button
               type="button"
               onClick={onEdit}
-              className="group mt-4 flex w-full items-start justify-between gap-3 rounded-xl border border-transparent py-1 text-left transition hover:border-[#e8e8ed] hover:bg-[#fafafa]"
+              className="group mt-4 flex w-full items-start justify-between gap-3 rounded-xl border border-transparent py-1 text-left transition hover:border-navy-deep/10 hover:bg-cream/80"
             >
               <div className="min-w-0">
-                <p className="text-[11px] font-medium uppercase tracking-[0.1em] text-[#aeaeb2]">Your answer</p>
-                <p className="mt-1 text-[15px] font-medium leading-snug text-[#6e6e73] group-hover:text-[#1d1d1f]">
+                <p className="text-[11px] font-medium uppercase tracking-[0.1em] text-ink-muted/80">Your answer</p>
+                <p className="mt-1 text-[15px] font-medium leading-snug text-ink-muted group-hover:text-navy-deep">
                   {summary}
                 </p>
               </div>
-              <span className="mt-1 flex shrink-0 items-center gap-1 text-[12px] font-medium text-[#86868b] group-hover:text-[#1976FF]">
+              <span className="mt-1 flex shrink-0 items-center gap-1 text-[12px] font-medium text-ink-muted group-hover:text-electric">
                 <Pencil className="size-3.5" />
                 Edit
               </span>

@@ -84,9 +84,9 @@ export function QuoteAssistant({
     <div className={cn('flex h-full min-h-0 flex-col', className)}>
       {/* Header */}
       <div className="flex shrink-0 items-center gap-3 border-b border-white/[0.06] px-6 py-5">
-        <div className="relative flex size-9 items-center justify-center rounded-xl bg-gradient-to-br from-[#1976FF] to-[#00C2FF]">
-          <Bot className="size-4 text-white" strokeWidth={2} aria-hidden />
-          <span className="absolute -bottom-0.5 -right-0.5 size-2.5 rounded-full border-2 border-[#111113] bg-[#30d158]" />
+        <div className="relative flex size-9 items-center justify-center rounded-xl bg-gradient-to-br from-gold to-gold-light">
+          <Bot className="size-4 text-navy-deep" strokeWidth={2} aria-hidden />
+          <span className="absolute -bottom-0.5 -right-0.5 size-2.5 rounded-full border-2 border-navy-deep bg-[#30d158]" />
         </div>
         <div className="min-w-0 flex-1">
           <p className="text-[14px] font-semibold text-white">Sentrix Guide</p>
@@ -185,7 +185,7 @@ export function QuoteAssistant({
             type="button"
             onClick={() => sendMessage(input)}
             disabled={!input.trim() || typing}
-            className="flex size-8 shrink-0 items-center justify-center rounded-xl bg-white text-[#111113] transition hover:bg-white/90 disabled:opacity-30"
+            className="flex size-8 shrink-0 items-center justify-center rounded-xl bg-gold-light text-navy-deep transition hover:bg-gold-light/90 disabled:opacity-30"
             aria-label="Send"
           >
             <ArrowUp className="size-4" strokeWidth={2.5} />

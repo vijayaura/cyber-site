@@ -28,7 +28,7 @@ import { Footer } from '@/components/site/Footer'
 import { SEO } from '@/components/site/SEO'
 import { Container } from '@/components/site/Container'
 import { TrustBadges } from '@/components/site/TrustBadges'
-import { CyberGlobeBackground } from '@/components/site/CyberGlobeBackground'
+import { CyberDotsBackground } from '@/components/site/CyberDotsBackground'
 import { CountUp } from '@/components/site/CountUp'
 import { Button } from '@/components/ui/button'
 import {
@@ -126,10 +126,10 @@ export default function LandingPage() {
         {/* ── HERO: centered ── */}
         <section ref={heroRef} className="relative min-h-[100svh] overflow-hidden bg-paper pt-20 lg:pt-0">
           <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden>
-            <CyberGlobeBackground className="absolute inset-0" />
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_45%,rgba(253,252,250,0.55)_0%,rgba(253,252,250,0.78)_35%,rgba(253,252,250,0.94)_58%)]" />
-            <div className="absolute -left-24 top-16 size-80 rounded-full bg-[#1976FF]/8 blur-3xl" />
-            <div className="absolute -right-20 top-32 size-64 rounded-full bg-[#c8f060]/12 blur-3xl" />
+            <CyberDotsBackground className="absolute inset-0" />
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_45%,rgba(253,251,246,0.4)_0%,rgba(253,251,246,0.72)_40%,rgba(253,251,246,0.92)_62%)]" />
+            <div className="absolute -left-24 top-16 size-80 rounded-full bg-electric/8 blur-3xl" />
+            <div className="absolute -right-20 top-32 size-64 rounded-full bg-gold/10 blur-3xl" />
           </div>
           <Container className="relative z-10 flex min-h-[calc(100svh-5rem)] flex-col items-center justify-center py-16 text-center lg:py-24">
             <motion.div style={{ y: heroY }} className="flex w-full max-w-3xl flex-col items-center space-y-10">

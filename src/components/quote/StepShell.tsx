@@ -24,7 +24,7 @@ export function AnswerGrid({ children, cols = 2, hint }: AnswerGridProps) {
   return (
     <div className="space-y-3">
       {hint && (
-        <p className="text-[11px] font-medium uppercase tracking-[0.12em] text-[#86868b]">{hint}</p>
+        <p className="text-[11px] font-medium uppercase tracking-[0.12em] text-ink-muted">{hint}</p>
       )}
       <div
         className={cn(

@@ -14,7 +14,7 @@ export function ContinueButton({ onClick, disabled, className }: ContinueButtonP
       onClick={onClick}
       disabled={disabled}
       className={cn(
-        'group inline-flex h-12 w-full items-center justify-center gap-2 rounded-2xl bg-[#1d1d1f] text-[15px] font-semibold text-white transition-all hover:bg-[#333] active:scale-[0.98] disabled:opacity-40',
+        'group inline-flex h-12 w-full items-center justify-center gap-2 rounded-2xl bg-navy-deep text-[15px] font-semibold text-white transition-all hover:bg-navy active:scale-[0.98] disabled:opacity-40',
         className,
       )}
     >

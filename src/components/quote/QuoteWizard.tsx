@@ -46,8 +46,8 @@ export function QuoteWizard({
   }, [stepId, isLoading])
 
   return (
-    <div className="quote-shell flex h-[100dvh] flex-col overflow-hidden bg-[#09090b]">
-      <header className="relative z-20 shrink-0 border-b border-white/[0.06] bg-[#09090b]">
+    <div className="quote-shell flex h-[100dvh] flex-col overflow-hidden">
+      <header className="relative z-20 shrink-0 border-b border-gold/20 bg-transparent">
         <div className="flex h-11 items-center justify-between px-4 sm:h-12 sm:px-6 lg:px-8">
           <div className="flex items-center gap-2">
             {canGoBack ? (
@@ -129,7 +129,7 @@ export function QuoteWizard({
       </header>
 
       <div className="grid min-h-0 flex-1 grid-cols-1 gap-3 px-3 pb-3 sm:gap-4 sm:px-4 sm:pb-4 lg:grid-cols-[1fr_340px] lg:px-5 lg:pb-5">
-        <div className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-[20px] bg-[#fafafa] shadow-[0_8px_40px_rgba(0,0,0,0.35)]">
+        <div className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-[20px] quote-thread-panel">
           <div
             ref={threadRef}
             className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-5 py-6 sm:px-8 sm:py-8 lg:px-10"
@@ -138,7 +138,7 @@ export function QuoteWizard({
           </div>
         </div>
 
-        <aside className="hidden min-h-0 flex-col overflow-hidden rounded-[20px] bg-[#111113] lg:flex">
+        <aside className="quote-sidebar hidden min-h-0 flex-col overflow-hidden rounded-[20px] lg:flex">
           <QuoteAssistant
             stepId={stepId}
             stepTitle={stepTitle}

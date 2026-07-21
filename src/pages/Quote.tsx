@@ -574,10 +574,10 @@ export default function QuotePage() {
           <motion.section
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
-            className="border-b border-[#e8e8ed] py-8"
+            className="border-b border-navy-deep/10 py-8"
           >
-            <p className="text-[11px] font-medium uppercase tracking-[0.12em] text-[#86868b]">Processing</p>
-            <h2 className="mt-1 text-[19px] font-semibold text-[#1d1d1f]">Generating your quote…</h2>
+            <p className="text-[11px] font-medium uppercase tracking-[0.12em] text-ink-muted">Processing</p>
+            <h2 className="mt-1 text-[19px] font-semibold text-navy-deep">Generating your quote…</h2>
             <ul className="mt-6 space-y-4" aria-live="polite">
               {LOADING_CHECKS.map((check, i) => (
                 <motion.li
@@ -585,9 +585,9 @@ export default function QuotePage() {
                   initial={{ opacity: 0, x: -8 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: i * 0.35 }}
-                  className="flex items-center gap-4 text-sm text-[#6e6e73]"
+                  className="flex items-center gap-4 text-sm text-ink-muted"
                 >
-                  <span className="font-display text-xs tabular-nums text-[#aeaeb2]">
+                  <span className="font-display text-xs tabular-nums text-ink-muted/70">
                     {String(i + 1).padStart(2, '0')}
                   </span>
                   {check}

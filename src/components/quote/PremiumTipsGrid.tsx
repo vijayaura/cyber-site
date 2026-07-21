@@ -23,13 +23,13 @@ export function PremiumTipCard({ tip, onAction }: PremiumTipCardProps) {
         >
           <Icon className="size-5 text-white" strokeWidth={2} fill="currentColor" fillOpacity={0.2} />
         </span>
-        <span className="shrink-0 rounded-full bg-[#1d1d1f] px-2.5 py-1 text-[11px] font-bold tabular-nums text-white">
+        <span className="shrink-0 rounded-full bg-navy-deep px-2.5 py-1 text-[11px] font-bold tabular-nums text-white">
           −{tip.discount}%
         </span>
       </div>
 
-      <h3 className="text-[15px] font-semibold leading-snug text-[#1d1d1f]">{tip.title}</h3>
-      <p className="mt-1.5 flex items-center gap-1.5 text-[13px] text-[#86868b]">
+      <h3 className="text-[15px] font-semibold leading-snug text-navy-deep">{tip.title}</h3>
+      <p className="mt-1.5 flex items-center gap-1.5 text-[13px] text-ink-muted">
         <Clock className="size-3.5 shrink-0" />
         {tip.time}
       </p>
@@ -38,7 +38,7 @@ export function PremiumTipCard({ tip, onAction }: PremiumTipCardProps) {
         type="button"
         onClick={onAction}
         className={cn(
-          'mt-5 w-full rounded-xl border border-[#e8e8ed] bg-[#fafafa] py-2.5 text-[13px] font-semibold text-[#1d1d1f]',
+          'mt-5 w-full rounded-xl border border-navy-deep/10 bg-cream/60 py-2.5 text-[13px] font-semibold text-navy-deep',
           'transition-all hover:border-[#1976FF]/30 hover:bg-[#1976FF]/[0.06] hover:text-[#1976FF]',
           'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1976FF]/30',
         )}
