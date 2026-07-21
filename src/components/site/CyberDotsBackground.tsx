@@ -38,7 +38,7 @@ export function CyberDotsBackground({ className }: { className?: string }) {
       canvas.style.height = `${h}px`
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
 
-      const count = Math.max(48, Math.floor((w * h) / 14000))
+      const count = Math.max(80, Math.floor((w * h) / 7500))
       nodes = Array.from({ length: count }, () => ({
         x: Math.random() * w,
         y: Math.random() * h,

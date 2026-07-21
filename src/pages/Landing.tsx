@@ -127,7 +127,7 @@ export default function LandingPage() {
         <section ref={heroRef} className="relative min-h-[100svh] overflow-hidden bg-paper pt-20 lg:pt-0">
           <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden>
             <CyberDotsBackground className="absolute inset-0" />
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_45%,rgba(253,251,246,0.4)_0%,rgba(253,251,246,0.72)_40%,rgba(253,251,246,0.92)_62%)]" />
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_45%,rgba(253,251,246,0.32)_0%,rgba(253,251,246,0.65)_40%,rgba(253,251,246,0.88)_62%)]" />
             <div className="absolute -left-24 top-16 size-80 rounded-full bg-electric/8 blur-3xl" />
             <div className="absolute -right-20 top-32 size-64 rounded-full bg-gold/10 blur-3xl" />
           </div>
@@ -361,11 +361,11 @@ export default function LandingPage() {
         </section>
 
         {/* ── FAQ: split layout ── */}
-        <section id="faq" className="section-pad bg-accent/30">
+        <section id="faq" className="section-pad bg-navy-deep text-white">
           <Container>
             <div className="mx-auto max-w-2xl text-center">
-              <p className="label-caps">Frequently asked</p>
-              <h2 className="display-lg mt-4">Answers, before you ask</h2>
+              <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-cyan">Frequently asked</p>
+              <h2 className="display-lg mt-4 text-white">Answers, before you ask</h2>
             </div>
             <Accordion type="single" collapsible className="mx-auto mt-12 max-w-2xl rounded-2xl border border-border bg-white px-2 shadow-soft">
                 {faqs.map((faq) => (
