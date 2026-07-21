@@ -5,7 +5,7 @@ import { ArrowLeft, Check, Minus, X, ArrowRight, Sparkles } from 'lucide-react'
 import { Slider } from '@/components/ui/slider'
 import { ScoreGauge } from './ScoreGauge'
 import { PremiumTipsGrid } from './PremiumTipsGrid'
-import { LIMITS, PLANS, FEATURE_LIST } from '@/lib/quote-store'
+import { LIMITS, PLANS, FEATURE_LIST, planAnnualPremium } from '@/lib/quote-store'
 import { PREMIUM_TIPS } from '@/lib/premium-tips'
 import { fmtNumber } from '@/lib/utils'
 
@@ -28,11 +28,13 @@ export function QuotePlansPanel({ score, basePremium, onBack }: QuotePlansPanelP
   const planPrices = useMemo(
     () =>
       PLANS.map((plan) => {
-        const monthly = Math.round((basePremium * plan.multiplier * limitFactor) / 12 / 10) * 10
-        return { ...plan, monthly, annual: monthly * 12 }
+        const annual = planAnnualPremium(basePremium, plan.multiplier, limitFactor)
+        return { ...plan, annual }
       }),
     [basePremium, limitFactor],
   )
+
+  const basicAnnual = planAnnualPremium(basePremium, 1, limitFactor)
 
   return (
     <div className="quote-shell flex h-[100dvh] flex-col overflow-hidden">
@@ -81,9 +83,9 @@ export function QuotePlansPanel({ score, basePremium, onBack }: QuotePlansPanelP
                 <ScoreGauge score={score} size="sm" inverted showLabel={false} />
                 <div className="text-right leading-tight">
                   <p className="text-lg font-bold tabular-nums text-white sm:text-xl">
-                    ${fmtNumber(basePremium)}
+                    ${fmtNumber(basicAnnual)}
                   </p>
-                  <p className="text-[10px] font-medium text-white/50">base /yr</p>
+                  <p className="text-[10px] font-medium text-white/50">Basic plan /yr</p>
                 </div>
               </div>
             </div>
@@ -137,11 +139,11 @@ export function QuotePlansPanel({ score, basePremium, onBack }: QuotePlansPanelP
                 )}
                 <h2 className="font-display text-xl font-normal text-navy-deep">{plan.name}</h2>
                 <p className="mt-3 font-display text-3xl font-light tabular-nums text-navy-deep">
-                  ${fmtNumber(plan.monthly)}
-                  <span className="text-sm text-ink-muted">/mo</span>
+                  ${fmtNumber(plan.annual)}
+                  <span className="text-sm text-ink-muted">/yr</span>
                 </p>
                 <p className="mt-1 text-xs text-ink-muted">
-                  ${fmtNumber(plan.annual)}/yr · ${fmtNumber(plan.deductible)} deductible
+                  ${fmtNumber(plan.deductible)} deductible
                 </p>
                 <ul className="mt-5 flex-1 space-y-2 border-t border-[#f2f2f7] pt-4">
                   {FEATURE_LIST.slice(0, 6).map((f) => (

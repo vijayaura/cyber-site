@@ -213,12 +213,20 @@ export const DATA_TYPES = [
 
 export const LIMITS = [250_000, 500_000, 1_000_000, 2_000_000, 5_000_000] as const
 
+export function planAnnualPremium(
+  basePremium: number,
+  planMultiplier: number,
+  limitFactor: number,
+): number {
+  return Math.round((basePremium * planMultiplier * limitFactor) / 10) * 10
+}
+
 export const PLANS = [
   {
     id: 'basic',
     name: 'Basic',
     tag: null as string | null,
-    multiplier: 0.75,
+    multiplier: 1.0,
     deductible: 5_000,
     features: {
       'First Party Loss': true,
@@ -242,7 +250,7 @@ export const PLANS = [
     id: 'value',
     name: 'Value',
     tag: 'Most Popular',
-    multiplier: 1.0,
+    multiplier: 1.5,
     deductible: 2_500,
     features: {
       'First Party Loss': true,
@@ -266,7 +274,7 @@ export const PLANS = [
     id: 'premium',
     name: 'Premium',
     tag: 'Recommended',
-    multiplier: 1.5,
+    multiplier: 1.75,
     deductible: 1_000,
     features: {
       'First Party Loss': true,

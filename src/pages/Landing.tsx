@@ -367,13 +367,13 @@ export default function LandingPage() {
               <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-cyan">Frequently asked</p>
               <h2 className="display-lg mt-4 text-white">Answers, before you ask</h2>
             </div>
-            <Accordion type="single" collapsible className="mx-auto mt-12 max-w-2xl rounded-2xl border border-border bg-white px-2 shadow-soft">
+            <Accordion type="single" collapsible className="mx-auto mt-12 max-w-2xl rounded-2xl border border-border bg-white px-2 text-navy-deep shadow-soft">
                 {faqs.map((faq) => (
                   <AccordionItem key={faq.q} value={faq.q} className="border-border">
-                    <AccordionTrigger className="py-6 font-display text-lg font-normal hover:no-underline">
+                    <AccordionTrigger className="py-6 font-display text-lg font-normal text-navy-deep hover:no-underline">
                       {faq.q}
                     </AccordionTrigger>
-                    <AccordionContent className="pb-6 text-muted-foreground">
+                    <AccordionContent className="pb-6 text-ink-muted">
                       {faq.a}
                     </AccordionContent>
                   </AccordionItem>
