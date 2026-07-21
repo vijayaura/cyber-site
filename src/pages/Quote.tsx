@@ -28,6 +28,7 @@ import type { LucideIcon } from 'lucide-react'
 import { SEO } from '@/components/site/SEO'
 import { AnswerGrid, AnswerGridFooter } from '@/components/quote/StepShell'
 import { QuoteWizard } from '@/components/quote/QuoteWizard'
+import { QuoteThreadBlock } from '@/components/quote/QuoteThreadBlock'
 import { QuotePlansPanel } from '@/components/quote/QuotePlansPanel'
 import { ChoiceButton } from '@/components/quote/ChoiceButton'
 import { OptionChip, REVENUE_CHIPS, EMPLOYEE_CHIPS } from '@/components/quote/OptionChip'
@@ -43,7 +44,7 @@ import {
   OPERATES,
   DATA_TYPES,
 } from '@/lib/quote-store'
-import { isStepAnswered } from '@/lib/quote-steps'
+import { isStepAnswered, getAnswerSummary } from '@/lib/quote-steps'
 import { ADVANCE_DELAY } from '@/lib/utils'
 import {
   INDUSTRY_ICONS,
@@ -273,7 +274,7 @@ export default function QuotePage() {
           setAnswer('data', nextData)
         }
         return (
-          <AnswerGrid hint="Pick all that apply · hover to preview">
+          <AnswerGrid hint="Pick all that apply">
             {DATA_TYPES.map((d) => {
               const { icon, bg } = getOptionIcon(DATA_TYPE_ICONS, d)
               return (
@@ -548,31 +549,52 @@ export default function QuotePage() {
         isLoading={isLoading}
         canGoBack={step > 0 && !isLoading}
         onBack={prev}
-        icon={displayStep.icon}
-        title={displayStep.title}
-        subtitle={displayStep.subtitle}
         stepId={displayStep.id}
+        stepTitle={displayStep.title}
+        stepSubtitle={displayStep.subtitle}
         stepTip={'tip' in displayStep ? displayStep.tip : undefined}
       >
-        {isLoading ? (
-          <ul className="space-y-4" aria-live="polite">
-            {LOADING_CHECKS.map((check, i) => (
-              <motion.li
-                key={check}
-                initial={{ opacity: 0, x: -8 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: i * 0.35 }}
-                className="flex items-center gap-4 text-sm text-muted-foreground"
-              >
-                <span className="font-display text-xs tabular-nums text-foreground/30">
-                  {String(i + 1).padStart(2, '0')}
-                </span>
-                {check}
-              </motion.li>
-            ))}
-          </ul>
-        ) : (
-          renderAnswers(activeStepDef)
+        {(isLoading ? QUESTION_STEPS : QUESTION_STEPS.slice(0, step + 1)).map((stepDef, i) => (
+          <QuoteThreadBlock
+            key={stepDef.id}
+            icon={stepDef.icon}
+            title={stepDef.title}
+            subtitle={stepDef.subtitle}
+            stepNumber={i + 1}
+            active={!isLoading && i === step}
+            past={isLoading || i < step}
+            summary={getAnswerSummary(stepDef.id, answers)}
+            onEdit={() => goto(i)}
+          >
+            {!isLoading && i === step ? renderAnswers(stepDef) : null}
+          </QuoteThreadBlock>
+        ))}
+
+        {isLoading && (
+          <motion.section
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="border-b border-[#e8e8ed] py-8"
+          >
+            <p className="text-[11px] font-medium uppercase tracking-[0.12em] text-[#86868b]">Processing</p>
+            <h2 className="mt-1 text-[19px] font-semibold text-[#1d1d1f]">Generating your quote…</h2>
+            <ul className="mt-6 space-y-4" aria-live="polite">
+              {LOADING_CHECKS.map((check, i) => (
+                <motion.li
+                  key={check}
+                  initial={{ opacity: 0, x: -8 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: i * 0.35 }}
+                  className="flex items-center gap-4 text-sm text-[#6e6e73]"
+                >
+                  <span className="font-display text-xs tabular-nums text-[#aeaeb2]">
+                    {String(i + 1).padStart(2, '0')}
+                  </span>
+                  {check}
+                </motion.li>
+              ))}
+            </ul>
+          </motion.section>
         )}
       </QuoteWizard>
     </>

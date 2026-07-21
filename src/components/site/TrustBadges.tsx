@@ -12,7 +12,7 @@ export function TrustBadges({ items, className }: TrustBadgesProps) {
         {items.map((item) => (
           <li
             key={item}
-            className="text-[11px] font-semibold uppercase tracking-[0.16em] text-muted-foreground/65"
+            className="text-[11px] font-semibold uppercase tracking-[0.16em] text-foreground/55"
           >
             {item}
           </li>

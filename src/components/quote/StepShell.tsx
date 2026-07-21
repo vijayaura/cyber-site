@@ -20,16 +20,18 @@ type AnswerGridProps = {
   hint?: string
 }
 
-export function AnswerGrid({ children, cols = 2, hint = 'Hover to preview · click to select' }: AnswerGridProps) {
+export function AnswerGrid({ children, cols = 2, hint }: AnswerGridProps) {
   return (
     <div className="space-y-3">
-      <p className="text-[11px] font-medium uppercase tracking-[0.12em] text-[#86868b]">{hint}</p>
+      {hint && (
+        <p className="text-[11px] font-medium uppercase tracking-[0.12em] text-[#86868b]">{hint}</p>
+      )}
       <div
         className={cn(
           'picker-grid grid w-full gap-2.5 sm:gap-3',
-          cols === 3 && 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3',
-          cols === 2 && 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3',
-          cols === 1 && 'grid-cols-1 max-w-xl',
+          cols === 3 && 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4',
+          cols === 2 && 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4',
+          cols === 1 && 'grid-cols-1 lg:grid-cols-2',
         )}
       >
         {children}

@@ -101,18 +101,49 @@ const INDUSTRY_MULT: Record<string, number> = {
 }
 
 export function estimatePremium(answers: Answers, score: number): number {
-  const base = 1200
-  const revenue = answers.revenue ?? 1_000_000
-  const employees = answers.employees ?? 25
-  const industry = answers.industry ?? 'Other'
+  const base = 3000
+  let multiplier = 1
 
-  const revenueFactor = Math.min(6, Math.max(0.6, revenue / 1_000_000))
-  const empFactor = Math.min(4, Math.max(0.6, employees / 25 + 0.6))
-  const scoreDiscount = Math.max(0.55, 1 - (score - 60) / 100)
-  const industryMult = INDUSTRY_MULT[industry] ?? 1
+  if (answers.revenue != null) {
+    multiplier *= Math.min(2.5, Math.max(0.7, Math.sqrt(answers.revenue / 1_000_000)))
+  }
+  if (answers.employees != null) {
+    multiplier *= Math.min(1.75, Math.max(0.8, answers.employees / 25))
+  }
+  if (answers.industry) {
+    multiplier *= INDUSTRY_MULT[answers.industry] ?? 1
+  }
+  if (answers.payments === 'yes') multiplier *= 1.08
+  if (answers.remote === 'yes') multiplier *= 1.05
+  if (answers.data?.length) {
+    multiplier *= 1 + Math.min(0.4, answers.data.length * 0.035)
+  }
 
-  const premium = base * revenueFactor * empFactor * industryMult * scoreDiscount
-  return Math.round(premium / 10) * 10
+  const securityKeys = [
+    'training',
+    'phishing',
+    'inventory',
+    'mfa',
+    'vpn',
+    'installFree',
+    'backups',
+    'backupTest',
+    'patching',
+    'legacy',
+    'emailBlock',
+    'emailAuth',
+    'antivirus',
+    'monitoring',
+    'ir',
+    'irReview',
+  ] as const
+  const answeredSecurity = securityKeys.filter((key) => answers[key]).length
+  if (answeredSecurity > 0) {
+    const scoreDiscount = Math.max(0.7, 1 - (score - 55) / 130)
+    multiplier *= scoreDiscount
+  }
+
+  return Math.round((base * multiplier) / 10) * 10
 }
 
 export const useQuote = create<QuoteState>((set) => ({
