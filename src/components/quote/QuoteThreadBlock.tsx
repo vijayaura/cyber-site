@@ -2,14 +2,18 @@ import type { LucideIcon } from 'lucide-react'
 import { Pencil } from 'lucide-react'
 import { motion } from 'motion/react'
 import { cn } from '@/lib/utils'
+import { QuoteStepHelp } from './QuoteStepHelp'
 
 type QuoteThreadBlockProps = {
   icon: LucideIcon
   title: string
   subtitle?: string
+  stepId: string
+  stepTip?: string
   stepNumber: number
   active: boolean
   past: boolean
+  answered: boolean
   summary: string | null
   onEdit: () => void
   children?: React.ReactNode
@@ -19,9 +23,12 @@ export function QuoteThreadBlock({
   icon: Icon,
   title,
   subtitle,
+  stepId,
+  stepTip,
   stepNumber,
   active,
   past,
+  answered,
   summary,
   onEdit,
   children,
@@ -29,12 +36,13 @@ export function QuoteThreadBlock({
   return (
     <motion.section
       layout
+      data-quote-active={active ? '' : undefined}
       initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
       className={cn(
         'border-b border-navy-deep/10 py-8 first:pt-2',
-        past && !active && 'opacity-45 hover:opacity-70',
+        past && !active && 'opacity-50 transition-opacity hover:opacity-80',
         active && 'opacity-100',
       )}
     >
@@ -52,23 +60,51 @@ export function QuoteThreadBlock({
           <p className="text-[11px] font-medium uppercase tracking-[0.12em] text-ink-muted">
             Question {stepNumber}
           </p>
-          <h2
-            className={cn(
-              'mt-1 text-[17px] font-semibold leading-snug tracking-tight sm:text-[19px]',
-              active ? 'text-navy-deep' : 'text-ink-muted',
-            )}
-          >
-            {title}
-          </h2>
-          {active && subtitle && (
-            <p className="mt-2 text-[14px] leading-relaxed text-ink-muted">{subtitle}</p>
+
+          {active && !answered ? (
+            <QuoteStepHelp
+              stepId={stepId}
+              stepTitle={title}
+              stepSubtitle={subtitle}
+              stepTip={stepTip}
+              answered={answered}
+            >
+              {({ toggle, panel }) => (
+                <>
+                  <div className="mt-1 flex items-start justify-between gap-3 sm:gap-4">
+                    <h2 className="min-w-0 flex-1 text-[17px] font-semibold leading-snug tracking-tight text-navy-deep sm:text-[19px]">
+                      {title}
+                    </h2>
+                    {toggle}
+                  </div>
+                  {subtitle && (
+                    <p className="mt-2 text-[14px] leading-relaxed text-ink-muted">{subtitle}</p>
+                  )}
+                  {panel && <div className="mt-4">{panel}</div>}
+                </>
+              )}
+            </QuoteStepHelp>
+          ) : (
+            <>
+              <h2
+                className={cn(
+                  'mt-1 text-[17px] font-semibold leading-snug tracking-tight sm:text-[19px]',
+                  active ? 'text-navy-deep' : 'text-ink-muted',
+                )}
+              >
+                {title}
+              </h2>
+              {active && subtitle && (
+                <p className="mt-2 text-[14px] leading-relaxed text-ink-muted">{subtitle}</p>
+              )}
+            </>
           )}
 
           {past && !active && summary && (
             <button
               type="button"
               onClick={onEdit}
-              className="group mt-4 flex w-full items-start justify-between gap-3 rounded-xl border border-transparent py-1 text-left transition hover:border-navy-deep/10 hover:bg-cream/80"
+              className="group mt-4 flex w-full items-start justify-between gap-3 rounded-xl px-2 py-2 text-left transition-colors hover:bg-navy-deep/[0.04]"
             >
               <div className="min-w-0">
                 <p className="text-[11px] font-medium uppercase tracking-[0.1em] text-ink-muted/80">Your answer</p>

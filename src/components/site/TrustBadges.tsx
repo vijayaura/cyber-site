@@ -7,17 +7,21 @@ type TrustBadgesProps = {
 
 export function TrustBadges({ items, className }: TrustBadgesProps) {
   return (
-    <div className={cn('border-t border-border bg-cream/60 py-5', className)}>
-      <ul className="mx-auto flex max-w-3xl flex-wrap items-center justify-center gap-x-6 gap-y-2 px-5">
-        {items.map((item) => (
-          <li
-            key={item}
-            className="text-[11px] font-semibold uppercase tracking-[0.16em] text-foreground/75"
-          >
-            {item}
-          </li>
-        ))}
-      </ul>
-    </div>
+    <p
+      className={cn(
+        'mt-6 inline-flex flex-nowrap items-center justify-center whitespace-nowrap text-[11px] uppercase tracking-[0.14em] text-foreground/50',
+        className,
+      )}
+    >
+      <span className="text-[10px] font-medium tracking-[0.18em] text-muted-foreground/65">Certifications</span>
+      {items.map((item) => (
+        <span key={item} className="inline-flex items-center">
+          <span className="mx-3 text-muted-foreground/25" aria-hidden>
+            ·
+          </span>
+          <span className="font-semibold">{item}</span>
+        </span>
+      ))}
+    </p>
   )
 }

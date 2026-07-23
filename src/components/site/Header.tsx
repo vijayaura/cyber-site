@@ -13,7 +13,6 @@ type HeaderProps = {
 const navLinks = [
   { label: 'Coverage', to: '/', hash: 'coverage' },
   { label: 'How it works', to: '/', hash: 'how' },
-  { label: 'Plans', to: '/plans' },
   { label: 'FAQ', to: '/', hash: 'faq' },
 ]
 

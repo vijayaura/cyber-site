@@ -15,4 +15,4 @@ export function fmtNumber(n: number): string {
   return n.toLocaleString()
 }
 
-export const ADVANCE_DELAY = 650
+export const ADVANCE_DELAY = 780

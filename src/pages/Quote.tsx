@@ -136,7 +136,6 @@ export default function QuotePage() {
   const questionSteps = QUESTION_STEPS.length
   const isLoading = step === LOADING_STEP_INDEX
   const isPlans = step === PLANS_STEP_INDEX
-  const activeStepDef = isLoading || isPlans ? QUESTION_STEPS[questionSteps - 1] : QUESTION_STEPS[step]
   const progressPct =
     isPlans || isLoading
       ? 100
@@ -515,10 +514,6 @@ export default function QuotePage() {
     }
   }
 
-  const displayStep = isLoading
-    ? { id: 'loading', icon: Radar, title: 'Generating your quote…', subtitle: 'Running our underwriting engine over your answers.' }
-    : activeStepDef
-
   if (isPlans) {
     return (
       <>
@@ -545,14 +540,9 @@ export default function QuotePage() {
         questionSteps={questionSteps}
         progressPct={progressPct}
         score={score}
-        premium={premium}
         isLoading={isLoading}
         canGoBack={step > 0 && !isLoading}
         onBack={prev}
-        stepId={displayStep.id}
-        stepTitle={displayStep.title}
-        stepSubtitle={displayStep.subtitle}
-        stepTip={'tip' in displayStep ? displayStep.tip : undefined}
       >
         {(isLoading ? QUESTION_STEPS : QUESTION_STEPS.slice(0, step + 1)).map((stepDef, i) => (
           <QuoteThreadBlock
@@ -560,9 +550,12 @@ export default function QuotePage() {
             icon={stepDef.icon}
             title={stepDef.title}
             subtitle={stepDef.subtitle}
+            stepId={stepDef.id}
+            stepTip={'tip' in stepDef ? stepDef.tip : undefined}
             stepNumber={i + 1}
             active={!isLoading && i === step}
             past={isLoading || i < step}
+            answered={isStepAnswered(stepDef.id, answers)}
             summary={getAnswerSummary(stepDef.id, answers)}
             onEdit={() => goto(i)}
           >
@@ -572,6 +565,7 @@ export default function QuotePage() {
 
         {isLoading && (
           <motion.section
+            data-quote-active
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
             className="border-b border-navy-deep/10 py-8"
