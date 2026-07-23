@@ -10,10 +10,40 @@ type Node = {
   size: number
 }
 
-const LINK_DISTANCE = 130
+type CyberDotsBackgroundProps = {
+  className?: string
+  /** Lighter mesh for hero text areas */
+  density?: 'light' | 'normal'
+}
 
-export function CyberDotsBackground({ className }: { className?: string }) {
+const PRESETS = {
+  light: {
+    areaDivisor: 18000,
+    minCount: 36,
+    maxCount: 56,
+    linkDistance: 88,
+    lineAlpha: 0.08,
+    speed: 0.1,
+    dotOpacity: 0.22,
+    haloOpacity: 0.035,
+    pulseAmount: 0.2,
+  },
+  normal: {
+    areaDivisor: 7500,
+    minCount: 80,
+    maxCount: Infinity,
+    linkDistance: 130,
+    lineAlpha: 0.22,
+    speed: 0.28,
+    dotOpacity: 0.45,
+    haloOpacity: 0.06,
+    pulseAmount: 0.45,
+  },
+} as const
+
+export function CyberDotsBackground({ className, density = 'normal' }: CyberDotsBackgroundProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
+  const preset = PRESETS[density]
 
   useEffect(() => {
     const canvas = canvasRef.current
@@ -38,14 +68,17 @@ export function CyberDotsBackground({ className }: { className?: string }) {
       canvas.style.height = `${h}px`
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
 
-      const count = Math.max(80, Math.floor((w * h) / 7500))
+      const count = Math.min(
+        preset.maxCount,
+        Math.max(preset.minCount, Math.floor((w * h) / preset.areaDivisor)),
+      )
       nodes = Array.from({ length: count }, () => ({
         x: Math.random() * w,
         y: Math.random() * h,
-        vx: (Math.random() - 0.5) * (reducedMotion ? 0 : 0.28),
-        vy: (Math.random() - 0.5) * (reducedMotion ? 0 : 0.28),
+        vx: (Math.random() - 0.5) * (reducedMotion ? 0 : preset.speed),
+        vy: (Math.random() - 0.5) * (reducedMotion ? 0 : preset.speed),
         pulse: Math.random() * Math.PI * 2,
-        size: 1 + Math.random() * 1.4,
+        size: density === 'light' ? 0.8 + Math.random() * 0.8 : 1 + Math.random() * 1.4,
       }))
     }
 
@@ -68,43 +101,32 @@ export function CyberDotsBackground({ className }: { className?: string }) {
           const dx = nodes[i].x - nodes[j].x
           const dy = nodes[i].y - nodes[j].y
           const dist = Math.sqrt(dx * dx + dy * dy)
-          if (dist > LINK_DISTANCE) continue
+          if (dist > preset.linkDistance) continue
 
-          const alpha = (1 - dist / LINK_DISTANCE) * 0.22
+          const alpha = (1 - dist / preset.linkDistance) * preset.lineAlpha
           ctx.beginPath()
           ctx.moveTo(nodes[i].x, nodes[i].y)
           ctx.lineTo(nodes[j].x, nodes[j].y)
           ctx.strokeStyle = `rgba(25, 118, 255, ${alpha})`
-          ctx.lineWidth = 0.6
+          ctx.lineWidth = density === 'light' ? 0.45 : 0.6
           ctx.stroke()
-
-          if (!reducedMotion && i % 7 === 0) {
-            const t = (time * 0.0009 + i * 0.11) % 1
-            const px = nodes[i].x + (nodes[j].x - nodes[i].x) * t
-            const py = nodes[i].y + (nodes[j].y - nodes[i].y) * t
-            ctx.beginPath()
-            ctx.arc(px, py, 1.3, 0, Math.PI * 2)
-            ctx.fillStyle = `rgba(201, 162, 39, ${0.35 + alpha})`
-            ctx.fill()
-          }
         }
       }
 
-      nodes.forEach((node, i) => {
-        const pulse = reducedMotion ? 1 : 0.55 + Math.sin(time * 0.0028 + node.pulse) * 0.45
+      nodes.forEach((node) => {
+        const pulse = reducedMotion
+          ? 1
+          : 1 - preset.pulseAmount + Math.sin(time * 0.0018 + node.pulse) * preset.pulseAmount
         const r = node.size * pulse
 
         ctx.beginPath()
-        ctx.arc(node.x, node.y, r + 2.5, 0, Math.PI * 2)
-        ctx.fillStyle = `rgba(25, 118, 255, ${0.06 * pulse})`
+        ctx.arc(node.x, node.y, r + 1.5, 0, Math.PI * 2)
+        ctx.fillStyle = `rgba(25, 118, 255, ${preset.haloOpacity * pulse})`
         ctx.fill()
 
         ctx.beginPath()
         ctx.arc(node.x, node.y, r, 0, Math.PI * 2)
-        ctx.fillStyle =
-          i % 11 === 0
-            ? `rgba(201, 162, 39, ${0.55 * pulse})`
-            : `rgba(6, 26, 64, ${0.45 * pulse})`
+        ctx.fillStyle = `rgba(6, 26, 64, ${preset.dotOpacity * pulse})`
         ctx.fill()
       })
 
@@ -119,7 +141,7 @@ export function CyberDotsBackground({ className }: { className?: string }) {
       cancelAnimationFrame(animationId)
       window.removeEventListener('resize', resize)
     }
-  }, [])
+  }, [density, preset])
 
   return <canvas ref={canvasRef} className={cn('size-full', className)} aria-hidden />
 }

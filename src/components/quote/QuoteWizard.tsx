@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import { ArrowLeft, X } from 'lucide-react'
 import { motion } from 'motion/react'
 import { ScoreGauge } from './ScoreGauge'
+import { ScoreInsight, ScoreIntroHint, ScoreBenchmark } from './ScoreInsight'
 
 type QuoteWizardProps = {
   activeStep: number
@@ -97,12 +98,20 @@ export function QuoteWizard({
             })}
           </div>
 
-          <div className="flex shrink-0 items-center justify-end gap-2 sm:gap-3">
-            <div className="flex flex-col items-center gap-0.5">
+          <div className="flex shrink-0 items-start justify-end gap-2 sm:gap-3">
+            <div
+              className="group/score relative flex flex-col items-center gap-1.5 outline-none sm:items-end"
+              tabIndex={0}
+              aria-label={`Cyber risk score ${score} out of 100`}
+            >
               <ScoreGauge score={score} size="sm" inverted showLabel={false} />
-              <p className="hidden text-[10px] font-medium uppercase tracking-[0.12em] text-white/45 sm:block">
-                Risk score
-              </p>
+              <p className="text-[10px] font-medium uppercase tracking-[0.12em] text-white/45">Risk score</p>
+              {score === 0 ? (
+                <ScoreIntroHint inverted className="hidden sm:block" />
+              ) : (
+                <ScoreBenchmark score={score} inverted />
+              )}
+              <ScoreInsight score={score} inverted />
             </div>
             <Link
               to="/"
@@ -113,6 +122,16 @@ export function QuoteWizard({
             </Link>
           </div>
         </div>
+
+        {score === 0 ? (
+          <div className="mt-2 border-t border-white/10 pt-2 sm:hidden">
+            <ScoreIntroHint inverted className="mx-auto text-center" />
+          </div>
+        ) : (
+          <div className="mt-2 border-t border-white/10 pt-2 sm:hidden">
+            <ScoreBenchmark score={score} inverted className="mx-auto text-center" />
+          </div>
+        )}
 
         <div className="mt-2 h-0.5 overflow-hidden rounded-full bg-white/10 sm:hidden">
           <motion.div

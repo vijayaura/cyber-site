@@ -25,9 +25,9 @@ const STEP_HINTS: Record<string, { intro: string; suggestions: string[] }> = {
     intro: 'Headcount reflects exposure — more people usually means more devices, accounts, and phishing targets.',
     suggestions: ['Do contractors count?', 'Remote vs office staff?', 'How does this affect premium?'],
   },
-  country: {
-    intro: 'Your operating country determines regulatory requirements and which policy terms apply.',
-    suggestions: ['Which countries are covered?', 'UAE vs international?', 'GCC coverage details'],
+  cloudServices: {
+    intro: 'Cloud email, file storage, and business apps expand your attack surface — but also enable stronger security when configured well.',
+    suggestions: ['Microsoft 365 counts?', 'Is cloud safer?', 'Does this affect my score?'],
   },
   operates: {
     intro: 'Work setup affects risk — remote and hybrid teams often need extra controls like MFA and VPN.',
@@ -41,73 +41,37 @@ const STEP_HINTS: Record<string, { intro: string; suggestions: string[] }> = {
     intro: 'Processing payments online increases fraud and PCI-related exposure. Be honest — it helps us right-size your policy.',
     suggestions: ['PCI compliance help?', 'Third-party processors?', 'Payment fraud coverage'],
   },
-  remote: {
-    intro: 'Remote work expands your attack surface. Insurers look for VPN, MFA, and endpoint protection.',
-    suggestions: ['Remote security tips', 'BYOD considerations', 'Score impact of remote work'],
+  securityAwareness: {
+    intro: 'Annual security training plus simulated phishing tests are among the strongest risk signals — they show your team can spot social engineering.',
+    suggestions: ['What training counts?', 'Recommended phishing tools?', 'How much does this save?'],
   },
-  training: {
-    intro: 'Annual security training is one of the strongest signals — it shows your team can spot phishing and social engineering.',
-    suggestions: ['What training counts?', 'Free training options', 'How much does this save?'],
+  secureAccess: {
+    intro: 'MFA and VPN together protect accounts and remote traffic. MFA blocks over 99% of automated attacks; VPN keeps remote access inside your security perimeter.',
+    suggestions: ['What is MFA?', 'VPN vs zero trust?', 'How to roll out both?'],
   },
-  phishing: {
-    intro: 'Simulated phishing tests train reflexes. Teams that run them regularly score significantly higher.',
-    suggestions: ['Recommended tools?', 'How often to test?', 'What if we failed tests?'],
+  assetPatch: {
+    intro: 'An up-to-date asset inventory plus timely patching closes known gaps before attackers exploit them.',
+    suggestions: ['What to include in inventory?', 'Patch management tools', 'Auto-updates enough?'],
   },
-  inventory: {
-    intro: 'An asset inventory helps you know what to protect and speeds up incident response after a breach.',
-    suggestions: ['What to include?', 'Spreadsheet vs tool?', 'Quick inventory template'],
+  endpointControls: {
+    intro: 'Unrestricted software installs and unsupported legacy systems are common ransomware entry points. Controlled installs and modern software reduce risk.',
+    suggestions: ['App allowlisting?', 'Legacy replacement planning', 'Developer exceptions'],
   },
-  mfa: {
-    intro: "Multi-factor authentication blocks over 99% of automated account attacks. It's the single highest-impact control.",
-    suggestions: ['What is MFA?', 'Authenticator vs SMS?', 'How to roll out MFA'],
+  backupRecovery: {
+    intro: 'Regular backups plus tested restores are your lifeline after ransomware. Untested backups fail when you need them most.',
+    suggestions: ['3-2-1 backup rule', 'How to test restores?', 'Recovery time targets'],
   },
-  vpn: {
-    intro: 'A VPN ensures remote traffic goes through your security controls instead of the open internet.',
-    suggestions: ['VPN vs zero trust?', 'Cloud-only businesses', 'Score without VPN'],
+  emailSecurity: {
+    intro: 'Email filtering and domain authentication (SPF, DKIM, DMARC) stop malicious mail and domain impersonation before they reach your team.',
+    suggestions: ['What is DMARC?', 'Microsoft vs Google setup', 'Phishing still gets through?'],
   },
-  installFree: {
-    intro: 'When anyone can install software freely, malware risk jumps. "No" here is the safer answer.',
-    suggestions: ['App allowlisting?', 'Mac vs Windows', 'Developer exceptions'],
+  endpointProtection: {
+    intro: 'Antivirus on every device plus centralised monitoring catches malware and intrusions that email filters miss.',
+    suggestions: ['EDR vs antivirus', 'SIEM for SMEs?', 'Managed SOC options'],
   },
-  backups: {
-    intro: 'Regular backups are your recovery lifeline after ransomware. Cloud + offline copies is best practice.',
-    suggestions: ['3-2-1 backup rule', 'Cloud backup tools', 'Ransomware recovery'],
-  },
-  backupTest: {
-    intro: 'Untested backups fail when you need them most. One restore test per year is the minimum.',
-    suggestions: ['How to test restores?', 'What to document?', 'Recovery time targets'],
-  },
-  patching: {
-    intro: 'Patching within 30 days closes known vulnerabilities before attackers exploit them.',
-    suggestions: ['Auto-updates enough?', 'Legacy software patches', 'Patch management tools'],
-  },
-  legacy: {
-    intro: 'Unsupported software no longer receives security fixes — a common ransomware entry point.',
-    suggestions: ['Windows 10 end of life', 'Replacement planning', 'Virtualisation options'],
-  },
-  emailBlock: {
-    intro: 'Automatic filtering stops malicious emails before employees see them.',
-    suggestions: ['Microsoft vs Google', 'False positives', 'Phishing still gets through?'],
-  },
-  emailAuth: {
-    intro: 'SPF, DKIM and DMARC stop attackers impersonating your domain — critical for trust and deliverability.',
-    suggestions: ['What is DMARC?', 'Setup difficulty', 'Common misconfigurations'],
-  },
-  antivirus: {
-    intro: 'Endpoint protection on every device catches malware that email filters miss.',
-    suggestions: ['EDR vs antivirus', 'Mac protection needed?', 'Free vs paid tools'],
-  },
-  monitoring: {
-    intro: 'Centralised threat monitoring detects intrusions faster — often within minutes instead of months.',
-    suggestions: ['SIEM for SMEs?', 'Managed SOC options', 'Minimum viable monitoring'],
-  },
-  ir: {
-    intro: 'An incident response plan tells your team exactly what to do when — not if — something happens.',
-    suggestions: ['Plan template', 'Who to call first?', 'Legal requirements'],
-  },
-  irReview: {
-    intro: 'Annual plan reviews keep contacts, procedures and tools current as your business changes.',
-    suggestions: ['Tabletop exercises', 'When to update?', 'Insurance notification steps'],
+  incidentResponse: {
+    intro: 'A documented incident response plan — reviewed annually — tells your team exactly what to do when something happens.',
+    suggestions: ['Plan template', 'Tabletop exercises', 'Insurance notification steps'],
   },
   loading: {
     intro: "Almost there — I'm running your answers through our underwriting engine now.",

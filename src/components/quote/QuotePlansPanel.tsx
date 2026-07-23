@@ -1,12 +1,12 @@
-import { useMemo, useState } from 'react'
+import { useMemo } from 'react'
 import { Link } from 'react-router-dom'
 import { motion } from 'motion/react'
 import { ArrowLeft, Check, Minus, X, ArrowRight, Sparkles } from 'lucide-react'
 import { Slider } from '@/components/ui/slider'
 import { ScoreGauge } from './ScoreGauge'
 import { PremiumTipsGrid } from './PremiumTipsGrid'
-import { LIMITS, PLANS, FEATURE_LIST, planAnnualPremium } from '@/lib/quote-store'
-import { PREMIUM_TIPS } from '@/lib/premium-tips'
+import { LIMITS, PLANS, FEATURE_LIST, getPlanPremium, PLAN_DEDUCTIBLE_OPTIONS, type Answers, type PlanId } from '@/lib/quote-store'
+import { getApplicablePremiumTips } from '@/lib/premium-tips'
 import { fmtNumber } from '@/lib/utils'
 
 function fmtLimit(n: number): string {
@@ -17,24 +17,44 @@ function fmtLimit(n: number): string {
 type QuotePlansPanelProps = {
   score: number
   basePremium: number
+  answers: Answers
+  limitIndex: number
+  planDeductibles: Record<PlanId, number>
+  acceptedImprovements: string[]
+  onLimitChange: (index: number) => void
+  onDeductibleChange: (planId: PlanId, amount: number) => void
+  onToggleImprovement: (tipId: string) => void
+  onSelectPlan: (planId: PlanId) => void
   onBack?: () => void
 }
 
-export function QuotePlansPanel({ score, basePremium, onBack }: QuotePlansPanelProps) {
-  const [limitIndex, setLimitIndex] = useState(2)
+export function QuotePlansPanel({
+  score,
+  basePremium,
+  answers,
+  limitIndex,
+  planDeductibles,
+  acceptedImprovements,
+  onLimitChange,
+  onDeductibleChange,
+  onToggleImprovement,
+  onSelectPlan,
+  onBack,
+}: QuotePlansPanelProps) {
   const limit = LIMITS[limitIndex]
-  const limitFactor = Math.pow(limit / 1_000_000, 0.6)
+  const applicableTips = useMemo(() => getApplicablePremiumTips(answers), [answers])
 
   const planPrices = useMemo(
     () =>
       PLANS.map((plan) => {
-        const annual = planAnnualPremium(basePremium, plan.multiplier, limitFactor)
-        return { ...plan, annual }
+        const selectedDeductible = planDeductibles[plan.id]
+        const annual = getPlanPremium(basePremium, plan.id, limitIndex, selectedDeductible)
+        return { ...plan, annual, selectedDeductible }
       }),
-    [basePremium, limitFactor],
+    [basePremium, limitIndex, planDeductibles],
   )
 
-  const basicAnnual = planAnnualPremium(basePremium, 1, limitFactor)
+  const basicAnnual = getPlanPremium(basePremium, 'basic', limitIndex, planDeductibles.basic)
 
   return (
     <div className="quote-shell flex h-[100dvh] flex-col overflow-hidden">
@@ -76,7 +96,7 @@ export function QuotePlansPanel({ score, basePremium, onBack }: QuotePlansPanelP
                   Pick the coverage that fits.
                 </h1>
                 <p className="mt-2 max-w-lg text-[14px] text-white/50">
-                  Drag the slider to change your policy limit — your premium updates instantly.
+                  Adjust your policy limit and deductible — your premium updates instantly.
                 </p>
               </div>
               <div className="flex shrink-0 items-center gap-3 border-white/15 sm:border-l sm:pl-5">
@@ -107,7 +127,7 @@ export function QuotePlansPanel({ score, basePremium, onBack }: QuotePlansPanelP
               max={LIMITS.length - 1}
               step={1}
               value={[limitIndex]}
-              onValueChange={([v]) => setLimitIndex(v)}
+              onValueChange={([v]) => onLimitChange(v)}
               aria-label="Policy limit"
             />
             <div className="mt-3 flex justify-between text-[10px] uppercase tracking-wider text-white/35">
@@ -142,9 +162,31 @@ export function QuotePlansPanel({ score, basePremium, onBack }: QuotePlansPanelP
                   ${fmtNumber(plan.annual)}
                   <span className="text-sm text-ink-muted">/yr</span>
                 </p>
-                <p className="mt-1 text-xs text-ink-muted">
-                  ${fmtNumber(plan.deductible)} deductible
-                </p>
+                <div className="mt-3">
+                  <label
+                    htmlFor={`deductible-${plan.id}`}
+                    className="text-[10px] font-medium uppercase tracking-[0.12em] text-ink-muted"
+                  >
+                    Deductible
+                  </label>
+                  <select
+                    id={`deductible-${plan.id}`}
+                    value={plan.selectedDeductible}
+                    onChange={(e) => onDeductibleChange(plan.id, Number(e.target.value))}
+                    className="mt-1.5 w-full cursor-pointer rounded-xl border border-navy-deep/10 bg-cream/40 px-3 py-2.5 text-[13px] font-medium text-navy-deep outline-none transition focus:border-[#1976FF]/40 focus:ring-2 focus:ring-[#1976FF]/15"
+                  >
+                    {PLAN_DEDUCTIBLE_OPTIONS[plan.id].map((amount) => (
+                      <option key={amount} value={amount}>
+                        ${fmtNumber(amount)}
+                        {amount === plan.deductible
+                          ? ' · standard'
+                          : amount > plan.deductible
+                            ? ' · lower premium'
+                            : ' · higher premium'}
+                      </option>
+                    ))}
+                  </select>
+                </div>
                 <ul className="mt-5 flex-1 space-y-2 border-t border-[#f2f2f7] pt-4">
                   {FEATURE_LIST.slice(0, 6).map((f) => (
                     <li key={f} className="flex items-center gap-2 text-[13px] text-navy-deep">
@@ -159,6 +201,7 @@ export function QuotePlansPanel({ score, basePremium, onBack }: QuotePlansPanelP
                 </ul>
                 <button
                   type="button"
+                  onClick={() => onSelectPlan(plan.id)}
                   className={`mt-5 flex w-full items-center justify-center gap-2 rounded-xl py-3 text-[14px] font-semibold transition-all ${
                     plan.id === 'value'
                       ? 'bg-navy-deep text-white hover:bg-navy'
@@ -172,21 +215,27 @@ export function QuotePlansPanel({ score, basePremium, onBack }: QuotePlansPanelP
             ))}
           </div>
 
-          {/* Premium tips */}
-          <div className="rounded-[20px] bg-white px-5 py-6 sm:px-7 sm:py-8">
-            <div className="mx-auto max-w-2xl text-center">
-              <span className="inline-flex items-center gap-1.5 rounded-full bg-[#22c55e]/10 px-3 py-1 text-[10px] font-semibold uppercase tracking-wider text-[#16a34a]">
-                Great news
-              </span>
-              <h2 className="mt-4 text-[22px] font-semibold tracking-tight text-navy-deep sm:text-[26px]">
-                You can reduce your premium.
-              </h2>
-              <p className="mt-2 text-[15px] text-ink-muted">
-                Complete a few security upgrades and unlock instant discounts on your policy.
-              </p>
+          {applicableTips.length > 0 && (
+            <div className="rounded-[20px] bg-white px-5 py-6 sm:px-7 sm:py-8">
+              <div className="mx-auto max-w-2xl text-center">
+                <span className="inline-flex items-center gap-1.5 rounded-full bg-[#22c55e]/10 px-3 py-1 text-[10px] font-semibold uppercase tracking-wider text-[#16a34a]">
+                  Great news
+                </span>
+                <h2 className="mt-4 text-[22px] font-semibold tracking-tight text-navy-deep sm:text-[26px]">
+                  You can reduce your premium.
+                </h2>
+                <p className="mt-2 text-[15px] text-ink-muted">
+                  Based on your answers, commit to these improvements within 30 days to unlock discounts.
+                </p>
+              </div>
+              <PremiumTipsGrid
+                tips={applicableTips}
+                acceptedIds={acceptedImprovements}
+                onAccept={onToggleImprovement}
+                className="mx-auto mt-8 max-w-3xl"
+              />
             </div>
-            <PremiumTipsGrid tips={PREMIUM_TIPS} className="mx-auto mt-8 max-w-3xl" />
-          </div>
+          )}
         </div>
       </div>
     </div>

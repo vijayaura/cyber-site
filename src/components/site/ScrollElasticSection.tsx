@@ -7,6 +7,7 @@ type ScrollElasticSectionProps = {
   className?: string
   id?: string
   intensity?: number
+  backgroundDecoration?: ReactNode
 }
 
 const spring = { stiffness: 72, damping: 22, mass: 0.55 }
@@ -16,6 +17,7 @@ export function ScrollElasticSection({
   className,
   id,
   intensity = 1,
+  backgroundDecoration,
 }: ScrollElasticSectionProps) {
   const ref = useRef<HTMLElement>(null)
   const { scrollYProgress } = useScroll({
@@ -28,7 +30,8 @@ export function ScrollElasticSection({
 
   return (
     <section ref={ref} id={id} className={cn('relative overflow-hidden', className)}>
-      <motion.div style={{ y, scale }} className="origin-[center_top] will-change-transform">
+      {backgroundDecoration}
+      <motion.div style={{ y, scale }} className="relative z-[1] origin-[center_top] will-change-transform">
         {children}
       </motion.div>
     </section>

@@ -90,6 +90,16 @@
   }
 }
 
+@keyframes float-soft {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-12px); }
+}
+
+@keyframes float-soft-delayed {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+
 @layer base {
   *, *::before, *::after { border-color: var(--color-border); }
 
@@ -159,7 +169,9 @@
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .animate-flag-wave {
+    .animate-flag-wave,
+    .animate-float-soft,
+    .animate-float-soft-delayed {
       animation: none !important;
     }
   }
@@ -168,6 +180,17 @@
 @utility animate-flag-wave {
   transform-origin: left center;
   animation: flag-wave 2.8s ease-in-out infinite;
+  will-change: transform;
+}
+
+@utility animate-float-soft {
+  animation: float-soft 5.5s ease-in-out infinite;
+  will-change: transform;
+}
+
+@utility animate-float-soft-delayed {
+  animation: float-soft-delayed 6.5s ease-in-out infinite;
+  animation-delay: 0.8s;
   will-change: transform;
 }
 

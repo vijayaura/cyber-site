@@ -4,7 +4,8 @@ import { QuotePlansPanel } from '@/components/quote/QuotePlansPanel'
 import { useQuote, calcScore, estimatePremium } from '@/lib/quote-store'
 
 export default function PlansPage() {
-  const { answers } = useQuote()
+  const { answers, policyLimitIndex, planDeductibles, acceptedImprovements, setPolicyLimitIndex, setPlanDeductible, toggleAcceptedImprovement } =
+    useQuote()
   const score = useMemo(() => calcScore(answers), [answers])
   const premium = useMemo(() => estimatePremium(answers, score), [answers, score])
 
@@ -14,7 +15,18 @@ export default function PlansPage() {
         title="Choose your plan — Sentrix"
         description="Compare Basic, Value, and Premium cyber insurance plans."
       />
-      <QuotePlansPanel score={score} basePremium={premium} />
+      <QuotePlansPanel
+        score={score}
+        basePremium={premium}
+        answers={answers}
+        limitIndex={policyLimitIndex}
+        planDeductibles={planDeductibles}
+        acceptedImprovements={acceptedImprovements}
+        onLimitChange={setPolicyLimitIndex}
+        onDeductibleChange={setPlanDeductible}
+        onToggleImprovement={toggleAcceptedImprovement}
+        onSelectPlan={() => {}}
+      />
     </>
   )
 }

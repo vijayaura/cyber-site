@@ -5,24 +5,16 @@ import {
   Building2,
   DollarSign,
   Users,
-  Globe,
   MapPin,
   Database,
   CreditCard,
-  Home,
   GraduationCap,
-  Bug,
-  ClipboardCheck,
   KeyRound,
-  Wifi,
-  Download,
+  ClipboardCheck,
   Cloud,
-  RefreshCw,
-  Server,
-  AlertTriangle,
   Mail,
-  Lock,
   Radar,
+  AlertTriangle,
 } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
 import { SEO } from '@/components/site/SEO'
@@ -30,6 +22,9 @@ import { AnswerGrid, AnswerGridFooter } from '@/components/quote/StepShell'
 import { QuoteWizard } from '@/components/quote/QuoteWizard'
 import { QuoteThreadBlock } from '@/components/quote/QuoteThreadBlock'
 import { QuotePlansPanel } from '@/components/quote/QuotePlansPanel'
+import { QuotePaymentPanel } from '@/components/quote/QuotePaymentPanel'
+import { QuoteDocCollectionPanel } from '@/components/quote/QuoteDocCollectionPanel'
+import { QuotePolicyPanel } from '@/components/quote/QuotePolicyPanel'
 import { ChoiceButton } from '@/components/quote/ChoiceButton'
 import { OptionChip, REVENUE_CHIPS, EMPLOYEE_CHIPS } from '@/components/quote/OptionChip'
 import { YesNoUnsure } from '@/components/quote/YesNoUnsure'
@@ -37,18 +32,23 @@ import { ContinueButton } from '@/components/quote/ContinueButton'
 import { TipBlock } from '@/components/quote/TipBlock'
 import {
   useQuote,
-  calcScore,
+  useQuoteScore,
   estimatePremium,
+  getPlanPremium,
   INDUSTRIES,
-  COUNTRIES,
   OPERATES,
   DATA_TYPES,
+  STEP_LOADING,
+  STEP_PLANS,
+  STEP_PAYMENT,
+  STEP_DOCS,
+  STEP_POLICY,
+  type PlanId,
 } from '@/lib/quote-store'
 import { isStepAnswered, getAnswerSummary } from '@/lib/quote-steps'
 import { ADVANCE_DELAY } from '@/lib/utils'
 import {
   INDUSTRY_ICONS,
-  COUNTRY_ICONS,
   OPERATES_ICONS,
   DATA_TYPE_ICONS,
   getOptionIcon,
@@ -72,49 +72,58 @@ const QUESTION_STEPS: StepDef[] = [
   },
   { id: 'revenue', icon: DollarSign, title: "What's your annual revenue?" },
   { id: 'employees', icon: Users, title: 'How many people work at your company?' },
-  { id: 'country', icon: Globe, title: 'Where is your business based?' },
+  { id: 'cloudServices', icon: Cloud, title: 'Do you use cloud services for email, files, or business apps?', subtitle: 'e.g. Microsoft 365, Google Workspace, AWS' },
   { id: 'operates', icon: MapPin, title: 'How does your team work?' },
   { id: 'data', icon: Database, title: 'What kind of sensitive data do you store?' },
   { id: 'payments', icon: CreditCard, title: 'Do you process online payments?' },
-  { id: 'remote', icon: Home, title: 'Do employees work remotely?' },
-  { id: 'training', icon: GraduationCap, title: 'Do all employees receive cybersecurity training every year?' },
   {
-    id: 'phishing',
-    icon: Bug,
-    title: 'Do you regularly test employees with fake phishing emails?',
-    subtitle: 'Simulated phishing helps train instincts.',
-    tip: 'This is one of the easiest ways to reduce cyber attacks.',
+    id: 'securityAwareness',
+    icon: GraduationCap,
+    title: 'Do employees receive annual cybersecurity training and phishing simulations?',
+    subtitle: 'Training and simulated phishing are strong indicators of security culture.',
+    tip: 'Combined training and phishing tests significantly reduce social engineering risk.',
   },
-  { id: 'inventory', icon: ClipboardCheck, title: 'Do you keep an updated list of all company laptops, computers and software?' },
   {
-    id: 'mfa',
+    id: 'secureAccess',
     icon: KeyRound,
-    title: 'When employees log in, do they verify with a code from their phone or authenticator app?',
-    subtitle: 'Also known as two-step verification or MFA.',
-    tip: 'Multi-factor auth blocks over 99% of automated attacks.',
+    title: 'Do employees use MFA and connect remotely through a company VPN?',
+    subtitle: 'Multi-factor authentication plus VPN for remote access.',
+    tip: 'MFA blocks over 99% of automated account attacks.',
   },
-  { id: 'vpn', icon: Wifi, title: 'Can employees connect remotely only through your company VPN?' },
-  { id: 'installFree', icon: Download, title: 'Can employees install software on their computers without approval?' },
-  { id: 'backups', icon: Cloud, title: 'Is your business data backed up regularly?' },
   {
-    id: 'backupTest',
-    icon: RefreshCw,
-    title: 'Have you ever tested restoring those backups?',
+    id: 'assetPatch',
+    icon: ClipboardCheck,
+    title: 'Do you maintain an asset inventory and install security updates within a month?',
+    subtitle: 'Knowing your assets and patching promptly closes common gaps.',
+  },
+  {
+    id: 'endpointControls',
+    icon: AlertTriangle,
+    title: 'Can employees install software without approval, or do you use unsupported legacy systems?',
+    subtitle: 'Uncontrolled installs and end-of-life software increase breach risk.',
+  },
+  {
+    id: 'backupRecovery',
+    icon: Cloud,
+    title: 'Is your data backed up regularly and have you tested restoring it?',
     tip: "Backups you haven't tested are just wishes. Restore-test at least once a year.",
   },
-  { id: 'patching', icon: Server, title: 'Do you install security updates within a month?' },
-  { id: 'legacy', icon: AlertTriangle, title: 'Do you still use computers or software that are no longer supported?' },
-  { id: 'emailBlock', icon: Mail, title: 'Are suspicious emails automatically blocked?' },
   {
-    id: 'emailAuth',
-    icon: Lock,
-    title: 'Do you use email verification (SPF, DKIM and DMARC)?',
-    subtitle: 'These prevent attackers from impersonating your domain.',
+    id: 'emailSecurity',
+    icon: Mail,
+    title: 'Are suspicious emails blocked and is your domain protected with SPF, DKIM and DMARC?',
+    subtitle: 'Filtering plus domain authentication prevents impersonation.',
   },
-  { id: 'antivirus', icon: ShieldCheck, title: 'Do all computers have antivirus or endpoint protection installed?' },
-  { id: 'monitoring', icon: Radar, title: 'Are threats monitored centrally?' },
-  { id: 'ir', icon: ShieldCheck, title: 'If your business is hacked, do you already have a documented response plan?' },
-  { id: 'irReview', icon: RefreshCw, title: 'Is that plan reviewed every year?' },
+  {
+    id: 'endpointProtection',
+    icon: ShieldCheck,
+    title: 'Do all devices have endpoint protection with centralised threat monitoring?',
+  },
+  {
+    id: 'incidentResponse',
+    icon: Radar,
+    title: 'Do you have a documented incident response plan reviewed every year?',
+  },
 ]
 
 const LOADING_CHECKS = [
@@ -124,20 +133,49 @@ const LOADING_CHECKS = [
   'Finalizing your quote…',
 ]
 
-const LOADING_STEP_INDEX = QUESTION_STEPS.length
-const PLANS_STEP_INDEX = QUESTION_STEPS.length + 1
-
 export default function QuotePage() {
-  const { step, answers, setAnswer, next, prev, goto } = useQuote()
+  const {
+    step,
+    answers,
+    selectedPlanId,
+    selectedDeductible,
+    planDeductibles,
+    policyLimitIndex,
+    tradeLicenseName,
+    acceptedImprovements,
+    setAnswer,
+    setSelectedPlan,
+    setPlanDeductible,
+    setPolicyLimitIndex,
+    setTradeLicense,
+    setPaymentComplete,
+    toggleAcceptedImprovement,
+    next,
+    prev,
+    goto,
+  } = useQuote()
   const advanceTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
-
-  const score = useMemo(() => calcScore(answers), [answers])
+  const score = useQuoteScore()
   const premium = useMemo(() => estimatePremium(answers, score), [answers, score])
   const questionSteps = QUESTION_STEPS.length
-  const isLoading = step === LOADING_STEP_INDEX
-  const isPlans = step === PLANS_STEP_INDEX
+  const isLoading = step === STEP_LOADING
+  const isPlans = step === STEP_PLANS
+  const isPayment = step === STEP_PAYMENT
+  const isDocs = step === STEP_DOCS
+  const isPolicy = step === STEP_POLICY
+
+  const selectedPremium = useMemo(() => {
+    if (!selectedPlanId) return premium
+    return getPlanPremium(
+      premium,
+      selectedPlanId,
+      policyLimitIndex,
+      selectedDeductible ?? planDeductibles[selectedPlanId],
+    )
+  }, [premium, selectedPlanId, policyLimitIndex, selectedDeductible, planDeductibles])
+
   const progressPct =
-    isPlans || isLoading
+    isPlans || isLoading || isPayment || isDocs || isPolicy
       ? 100
       : Math.round(((step + (isStepAnswered(QUESTION_STEPS[step]?.id ?? '', answers) ? 1 : 0)) / questionSteps) * 100)
 
@@ -157,6 +195,30 @@ export default function QuotePage() {
     const timer = setTimeout(next, 2800)
     return () => clearTimeout(timer)
   }, [isLoading, next])
+
+  const handleSelectPlan = (planId: PlanId) => {
+    setSelectedPlan(planId)
+    next()
+  }
+
+  const renderYesNoStep = (
+    field: keyof typeof answers,
+    opts?: { includeUnsure?: boolean; showTipOn?: string },
+  ) => (
+    <>
+      <YesNoUnsure
+        includeUnsure={opts?.includeUnsure ?? true}
+        value={answers[field] as string | undefined}
+        onChange={(v) => {
+          setAnswer(field, v)
+          maybeAdvance()
+        }}
+      />
+      {opts?.showTipOn && answers[field] === opts.showTipOn && (
+        <TipBlock tip={QUESTION_STEPS.find((s) => s.id === field)?.tip ?? ''} />
+      )}
+    </>
+  )
 
   const renderAnswers = (stepDef: StepDef) => {
     switch (stepDef.id) {
@@ -220,26 +282,15 @@ export default function QuotePage() {
           </AnswerGrid>
         )
 
-      case 'country':
+      case 'cloudServices':
         return (
-          <AnswerGrid>
-            {COUNTRIES.map((c) => {
-              const { icon, bg } = getOptionIcon(COUNTRY_ICONS, c)
-              return (
-                <ChoiceButton
-                  key={c}
-                  label={c}
-                  icon={icon}
-                  iconBg={bg}
-                  selected={answers.country === c}
-                  onClick={() => {
-                    setAnswer('country', c)
-                    maybeAdvance()
-                  }}
-                />
-              )
-            })}
-          </AnswerGrid>
+          <YesNoUnsure
+            value={answers.cloudServices}
+            onChange={(v) => {
+              setAnswer('cloudServices', v)
+              maybeAdvance()
+            }}
+          />
         )
 
       case 'operates':
@@ -295,223 +346,84 @@ export default function QuotePage() {
       }
 
       case 'payments':
-        return (
-          <YesNoUnsure
-            includeUnsure={false}
-            value={answers.payments}
-            onChange={(v) => {
-              setAnswer('payments', v)
-              maybeAdvance()
-            }}
-          />
-        )
+        return renderYesNoStep('payments', { includeUnsure: false })
 
-      case 'remote':
-        return (
-          <YesNoUnsure
-            includeUnsure={false}
-            value={answers.remote}
-            onChange={(v) => {
-              setAnswer('remote', v)
-              maybeAdvance()
-            }}
-          />
-        )
+      case 'securityAwareness':
+        return renderYesNoStep('securityAwareness')
 
-      case 'training':
-        return (
-          <YesNoUnsure
-            value={answers.training}
-            onChange={(v) => {
-              setAnswer('training', v)
-              maybeAdvance()
-            }}
-          />
-        )
+      case 'secureAccess':
+        return renderYesNoStep('secureAccess', { showTipOn: 'no' })
 
-      case 'phishing':
-        return (
-          <>
-            <YesNoUnsure
-              value={answers.phishing}
-              onChange={(v) => {
-                setAnswer('phishing', v)
-                maybeAdvance()
-              }}
-            />
-            {answers.phishing === 'no' && stepDef.tip && <TipBlock tip={stepDef.tip} />}
-          </>
-        )
+      case 'assetPatch':
+        return renderYesNoStep('assetPatch')
 
-      case 'inventory':
-        return (
-          <YesNoUnsure
-            value={answers.inventory}
-            onChange={(v) => {
-              setAnswer('inventory', v)
-              maybeAdvance()
-            }}
-          />
-        )
+      case 'endpointControls':
+        return renderYesNoStep('endpointControls', { includeUnsure: false })
 
-      case 'mfa':
-        return (
-          <>
-            <YesNoUnsure
-              value={answers.mfa}
-              onChange={(v) => {
-                setAnswer('mfa', v)
-                maybeAdvance()
-              }}
-            />
-            {answers.mfa === 'no' && stepDef.tip && <TipBlock tip={stepDef.tip} />}
-          </>
-        )
+      case 'backupRecovery':
+        return renderYesNoStep('backupRecovery', { showTipOn: 'no', includeUnsure: false })
 
-      case 'vpn':
-        return (
-          <YesNoUnsure
-            value={answers.vpn}
-            onChange={(v) => {
-              setAnswer('vpn', v)
-              maybeAdvance()
-            }}
-          />
-        )
+      case 'emailSecurity':
+        return renderYesNoStep('emailSecurity')
 
-      case 'installFree':
-        return (
-          <YesNoUnsure
-            includeUnsure={false}
-            value={answers.installFree}
-            onChange={(v) => {
-              setAnswer('installFree', v)
-              maybeAdvance()
-            }}
-          />
-        )
+      case 'endpointProtection':
+        return renderYesNoStep('endpointProtection', { includeUnsure: false })
 
-      case 'backups':
-        return (
-          <YesNoUnsure
-            value={answers.backups}
-            onChange={(v) => {
-              setAnswer('backups', v)
-              maybeAdvance()
-            }}
-          />
-        )
-
-      case 'backupTest':
-        return (
-          <>
-            <YesNoUnsure
-              includeUnsure={false}
-              value={answers.backupTest}
-              onChange={(v) => {
-                setAnswer('backupTest', v)
-                maybeAdvance()
-              }}
-            />
-            {answers.backupTest === 'no' && stepDef.tip && <TipBlock tip={stepDef.tip} />}
-          </>
-        )
-
-      case 'patching':
-        return (
-          <YesNoUnsure
-            value={answers.patching}
-            onChange={(v) => {
-              setAnswer('patching', v)
-              maybeAdvance()
-            }}
-          />
-        )
-
-      case 'legacy':
-        return (
-          <YesNoUnsure
-            includeUnsure={false}
-            value={answers.legacy}
-            onChange={(v) => {
-              setAnswer('legacy', v)
-              maybeAdvance()
-            }}
-          />
-        )
-
-      case 'emailBlock':
-        return (
-          <YesNoUnsure
-            value={answers.emailBlock}
-            onChange={(v) => {
-              setAnswer('emailBlock', v)
-              maybeAdvance()
-            }}
-          />
-        )
-
-      case 'emailAuth':
-        return (
-          <YesNoUnsure
-            value={answers.emailAuth}
-            onChange={(v) => {
-              setAnswer('emailAuth', v)
-              maybeAdvance()
-            }}
-          />
-        )
-
-      case 'antivirus':
-        return (
-          <YesNoUnsure
-            includeUnsure={false}
-            value={answers.antivirus}
-            onChange={(v) => {
-              setAnswer('antivirus', v)
-              maybeAdvance()
-            }}
-          />
-        )
-
-      case 'monitoring':
-        return (
-          <YesNoUnsure
-            value={answers.monitoring}
-            onChange={(v) => {
-              setAnswer('monitoring', v)
-              maybeAdvance()
-            }}
-          />
-        )
-
-      case 'ir':
-        return (
-          <YesNoUnsure
-            includeUnsure={false}
-            value={answers.ir}
-            onChange={(v) => {
-              setAnswer('ir', v)
-              maybeAdvance()
-            }}
-          />
-        )
-
-      case 'irReview':
-        return (
-          <YesNoUnsure
-            includeUnsure={false}
-            value={answers.irReview}
-            onChange={(v) => {
-              setAnswer('irReview', v)
-              maybeAdvance()
-            }}
-          />
-        )
+      case 'incidentResponse':
+        return renderYesNoStep('incidentResponse', { includeUnsure: false })
 
       default:
         return null
     }
+  }
+
+  if (isPolicy && selectedPlanId) {
+    return (
+      <>
+        <SEO title="Policy issued — Sentrix" description="Your cyber insurance policy is ready." noindex />
+        <QuotePolicyPanel
+          answers={answers}
+          score={score}
+          planId={selectedPlanId}
+          limitIndex={policyLimitIndex}
+          deductible={selectedDeductible ?? planDeductibles[selectedPlanId]}
+          annualPremium={selectedPremium}
+          tradeLicenseName={tradeLicenseName}
+          onBack={() => goto(STEP_DOCS)}
+        />
+      </>
+    )
+  }
+
+  if (isDocs) {
+    return (
+      <>
+        <SEO title="Upload documents — Sentrix" description="Upload your trade license to complete your policy." noindex />
+        <QuoteDocCollectionPanel
+          fileName={tradeLicenseName}
+          onFileSelect={setTradeLicense}
+          onBack={() => goto(STEP_PAYMENT)}
+          onContinue={next}
+        />
+      </>
+    )
+  }
+
+  if (isPayment && selectedPlanId) {
+    return (
+      <>
+        <SEO title="Payment — Sentrix" description="Complete your cyber insurance purchase." noindex />
+        <QuotePaymentPanel
+          planId={selectedPlanId}
+          annualPremium={selectedPremium}
+          onBack={() => goto(STEP_PLANS)}
+          onComplete={() => {
+            setPaymentComplete(true)
+            next()
+          }}
+        />
+      </>
+    )
   }
 
   if (isPlans) {
@@ -522,7 +434,19 @@ export default function QuotePage() {
           description="Compare Basic, Value, and Premium cyber insurance plans."
           noindex
         />
-        <QuotePlansPanel score={score} basePremium={premium} onBack={() => goto(LOADING_STEP_INDEX)} />
+        <QuotePlansPanel
+          score={score}
+          basePremium={premium}
+          answers={answers}
+          limitIndex={policyLimitIndex}
+          planDeductibles={planDeductibles}
+          acceptedImprovements={acceptedImprovements}
+          onLimitChange={setPolicyLimitIndex}
+          onDeductibleChange={setPlanDeductible}
+          onToggleImprovement={toggleAcceptedImprovement}
+          onSelectPlan={handleSelectPlan}
+          onBack={() => goto(STEP_LOADING)}
+        />
       </>
     )
   }

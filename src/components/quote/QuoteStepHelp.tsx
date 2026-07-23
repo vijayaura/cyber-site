@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react'
 import { AnimatePresence, motion } from 'motion/react'
-import { ArrowUp, MessageCircleQuestion, Sparkles } from 'lucide-react'
+import { MessageCircleQuestion, Sparkles } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import {
   type ChatMessage,
@@ -30,7 +30,6 @@ export function QuoteStepHelp({
 }: QuoteStepHelpProps) {
   const [open, setOpen] = useState(false)
   const [messages, setMessages] = useState<ChatMessage[]>([])
-  const [input, setInput] = useState('')
   const [typing, setTyping] = useState(false)
   const scrollRef = useRef<HTMLDivElement>(null)
   const prevStepRef = useRef('')
@@ -43,7 +42,6 @@ export function QuoteStepHelp({
     prevStepRef.current = stepId
     setOpen(false)
     setMessages([])
-    setInput('')
     setTyping(false)
   }, [stepId])
 
@@ -68,19 +66,17 @@ export function QuoteStepHelp({
     ])
   }, [])
 
-  const sendMessage = useCallback(
+  const askSuggestion = useCallback(
     async (text: string) => {
-      const trimmed = text.trim()
-      if (!trimmed || typing) return
+      if (typing) return
       if (!open) setOpen(true)
       setMessages((prev) => [
         ...prev,
-        { id: createId(), role: 'user', content: trimmed, timestamp: new Date() },
+        { id: createId(), role: 'user', content: text, timestamp: new Date() },
       ])
-      setInput('')
       setTyping(true)
       await new Promise((r) => setTimeout(r, 400 + Math.random() * 300))
-      addAssistantMessage(generateAssistantReply(trimmed, step))
+      addAssistantMessage(generateAssistantReply(text, step))
       setTyping(false)
     },
     [typing, step, addAssistantMessage, open],
@@ -184,7 +180,7 @@ export function QuoteStepHelp({
                 <button
                   key={s}
                   type="button"
-                  onClick={() => sendMessage(s)}
+                  onClick={() => askSuggestion(s)}
                   className="rounded-full border border-border bg-paper px-3 py-1.5 text-left text-[12px] text-ink-muted transition hover:border-electric/30 hover:text-navy-deep"
                 >
                   {s}
@@ -192,34 +188,6 @@ export function QuoteStepHelp({
               ))}
             </div>
           )}
-
-          <div className="border-t border-navy-deep/8 px-3 py-3">
-            <div className="flex items-end gap-2 rounded-xl border border-border bg-paper p-2 pl-3 focus-within:border-electric/40">
-              <textarea
-                value={input}
-                onChange={(e) => setInput(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter' && !e.shiftKey) {
-                    e.preventDefault()
-                    sendMessage(input)
-                  }
-                }}
-                placeholder="Ask anything about this step…"
-                rows={1}
-                className="quote-chat-input max-h-16 min-h-[24px] flex-1 resize-none bg-transparent py-1.5 text-[13px] text-navy-deep placeholder:text-ink-muted/60"
-                aria-label="Ask about this question"
-              />
-              <button
-                type="button"
-                onClick={() => sendMessage(input)}
-                disabled={!input.trim() || typing}
-                className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-navy-deep text-white transition hover:bg-navy disabled:opacity-30"
-                aria-label="Send"
-              >
-                <ArrowUp className="size-4" strokeWidth={2.5} />
-              </button>
-            </div>
-          </div>
         </motion.div>
       )}
     </AnimatePresence>

@@ -1,19 +1,24 @@
 import { cn } from '@/lib/utils'
 import type { PremiumTip } from '@/lib/premium-tips'
-import { Clock } from 'lucide-react'
+import { Check, Clock } from 'lucide-react'
+
+const ACCEPT_LABEL = 'Yes, I accept to implement in 30 days'
 
 type PremiumTipCardProps = {
   tip: PremiumTip
-  onAction?: () => void
+  accepted?: boolean
+  onAccept?: () => void
 }
 
-export function PremiumTipCard({ tip, onAction }: PremiumTipCardProps) {
+export function PremiumTipCard({ tip, accepted = false, onAccept }: PremiumTipCardProps) {
   const Icon = tip.icon
   return (
     <div
       className={cn(
-        'picker-card group flex flex-col rounded-2xl border border-[#e8e8ed] bg-white p-5',
-        'transition-all duration-200 hover:border-[#1976FF]/45 hover:shadow-[0_10px_28px_rgba(25,118,255,0.1)]',
+        'picker-card group flex flex-col rounded-2xl border bg-white p-5 transition-all duration-200',
+        accepted
+          ? 'border-[#22c55e]/40 shadow-[0_10px_28px_rgba(34,197,94,0.08)]'
+          : 'border-[#e8e8ed] hover:border-[#1976FF]/45 hover:shadow-[0_10px_28px_rgba(25,118,255,0.1)]',
       )}
     >
       <div className="mb-4 flex items-start justify-between gap-3">
@@ -36,24 +41,40 @@ export function PremiumTipCard({ tip, onAction }: PremiumTipCardProps) {
 
       <button
         type="button"
-        onClick={onAction}
+        onClick={onAccept}
+        aria-pressed={accepted}
         className={cn(
-          'mt-5 w-full rounded-xl border border-navy-deep/10 bg-cream/60 py-2.5 text-[13px] font-semibold text-navy-deep',
-          'transition-all hover:border-[#1976FF]/30 hover:bg-[#1976FF]/[0.06] hover:text-[#1976FF]',
-          'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1976FF]/30',
+          'mt-5 flex w-full items-center justify-center gap-2 rounded-xl py-2.5 text-[12px] font-semibold leading-snug sm:text-[13px]',
+          'transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1976FF]/30',
+          accepted
+            ? 'border border-[#22c55e]/30 bg-[#22c55e]/10 text-[#16a34a]'
+            : 'border border-navy-deep/10 bg-cream/60 text-navy-deep hover:border-[#1976FF]/30 hover:bg-[#1976FF]/[0.06] hover:text-[#1976FF]',
         )}
       >
-        {tip.action}
+        {accepted && <Check className="size-3.5 shrink-0" aria-hidden />}
+        {accepted ? 'Accepted · implement within 30 days' : ACCEPT_LABEL}
       </button>
     </div>
   )
 }
 
-export function PremiumTipsGrid({ tips, className }: { tips: PremiumTip[]; className?: string }) {
+type PremiumTipsGridProps = {
+  tips: PremiumTip[]
+  acceptedIds?: string[]
+  onAccept?: (tipId: string) => void
+  className?: string
+}
+
+export function PremiumTipsGrid({ tips, acceptedIds = [], onAccept, className }: PremiumTipsGridProps) {
   return (
     <div className={cn('picker-grid grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4', className)}>
       {tips.map((tip) => (
-        <PremiumTipCard key={tip.title} tip={tip} />
+        <PremiumTipCard
+          key={tip.id}
+          tip={tip}
+          accepted={acceptedIds.includes(tip.id)}
+          onAccept={() => onAccept?.(tip.id)}
+        />
       ))}
     </div>
   )

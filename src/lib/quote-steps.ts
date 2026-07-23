@@ -25,6 +25,18 @@ const EMPLOYEE_LABELS: Record<number, string> = {
   500: '250+',
 }
 
+const YES_NO_STEPS = [
+  'payments',
+  'securityAwareness',
+  'secureAccess',
+  'assetPatch',
+  'endpointControls',
+  'backupRecovery',
+  'emailSecurity',
+  'endpointProtection',
+  'incidentResponse',
+] as const
+
 export function isStepAnswered(id: string, answers: Answers): boolean {
   switch (id) {
     case 'industry':
@@ -33,32 +45,16 @@ export function isStepAnswered(id: string, answers: Answers): boolean {
       return answers.revenue != null
     case 'employees':
       return answers.employees != null
-    case 'country':
-      return !!answers.country
+    case 'cloudServices':
+      return !!answers.cloudServices
     case 'operates':
       return !!answers.operates
     case 'data':
       return (answers.data?.length ?? 0) > 0
-    case 'payments':
-    case 'remote':
-    case 'training':
-    case 'phishing':
-    case 'inventory':
-    case 'mfa':
-    case 'vpn':
-    case 'installFree':
-    case 'backups':
-    case 'backupTest':
-    case 'patching':
-    case 'legacy':
-    case 'emailBlock':
-    case 'emailAuth':
-    case 'antivirus':
-    case 'monitoring':
-    case 'ir':
-    case 'irReview':
-      return !!answers[id as keyof Answers]
     default:
+      if (YES_NO_STEPS.includes(id as (typeof YES_NO_STEPS)[number])) {
+        return !!answers[id as keyof Answers]
+      }
       return false
   }
 }
@@ -75,34 +71,19 @@ export function getAnswerSummary(id: string, answers: Answers): string | null {
       return answers.employees != null
         ? EMPLOYEE_LABELS[answers.employees] ?? `${answers.employees} people`
         : null
-    case 'country':
-      return answers.country ?? null
+    case 'cloudServices': {
+      const val = answers.cloudServices
+      return val ? YES_NO_LABELS[val] ?? val : null
+    }
     case 'operates':
       return answers.operates ?? null
     case 'data':
       return answers.data?.length ? answers.data.join(', ') : null
-    case 'payments':
-    case 'remote':
-    case 'training':
-    case 'phishing':
-    case 'inventory':
-    case 'mfa':
-    case 'vpn':
-    case 'installFree':
-    case 'backups':
-    case 'backupTest':
-    case 'patching':
-    case 'legacy':
-    case 'emailBlock':
-    case 'emailAuth':
-    case 'antivirus':
-    case 'monitoring':
-    case 'ir':
-    case 'irReview': {
-      const val = answers[id as keyof Answers] as string | undefined
-      return val ? YES_NO_LABELS[val] ?? val : null
-    }
     default:
+      if (YES_NO_STEPS.includes(id as (typeof YES_NO_STEPS)[number])) {
+        const val = answers[id as keyof Answers] as string | undefined
+        return val ? YES_NO_LABELS[val] ?? val : null
+      }
       return null
   }
 }
